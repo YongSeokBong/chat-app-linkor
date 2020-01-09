@@ -157,6 +157,17 @@ type Mutation {
   updateConvoLink(input: UpdateConvoLinkInput!): ConvoLink
 }
 
+input ModelConversationFilterInput {
+  id: ModelIDFilterInput
+  name: ModelStringFilterInput
+  members: ModelStringFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
+  and: [ModelConversationFilterInput]
+  or: [ModelConversationFilterInput]
+  not: ModelConversationFilterInput
+}
+
 input CreateConversationInput {
   id: ID
   name: String!
@@ -165,16 +176,16 @@ input CreateConversationInput {
   updatedAt: String
 }
 
-input UpdateConversationInput {
-  id: ID!
-  name: String
-  members: [String!]
-  createdAt: String
-  updatedAt: String
-}
-
-input DeleteConversationInput {
-  id: ID
+input ModelMessageFilterInput {
+  id: ModelIDFilterInput
+  authorId: ModelStringFilterInput
+  content: ModelStringFilterInput
+  messageConversationId: ModelIDFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
+  and: [ModelMessageFilterInput]
+  or: [ModelMessageFilterInput]
+  not: ModelMessageFilterInput
 }
 
 input CreateMessageInput {
@@ -199,6 +210,17 @@ input DeleteMessageInput {
   id: ID
 }
 
+input ModelConvoLinkFilterInput {
+  id: ModelIDFilterInput
+  convoLinkUserId: ModelIDFilterInput
+  convoLinkConversationId: ModelIDFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
+  and: [ModelConvoLinkFilterInput]
+  or: [ModelConvoLinkFilterInput]
+  not: ModelConvoLinkFilterInput
+}
+
 input CreateConvoLinkInput {
   id: ID
   convoLinkUserId: ID
@@ -215,39 +237,12 @@ input UpdateConvoLinkInput {
   updatedAt: String
 }
 
-input DeleteConvoLinkInput {
-  id: ID
-}
-
 type ModelConvoLinkConnection {
   items: [ConvoLink]
   nextToken: String
 }
 
-input ModelConvoLinkFilterInput {
-  id: ModelIDFilterInput
-  convoLinkUserId: ModelIDFilterInput
-  convoLinkConversationId: ModelIDFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
-  and: [ModelConvoLinkFilterInput]
-  or: [ModelConvoLinkFilterInput]
-  not: ModelConvoLinkFilterInput
-}
-
 type ModelMessageConnection {
   items: [Message]
   nextToken: String
-}
-
-input ModelMessageFilterInput {
-  id: ModelIDFilterInput
-  authorId: ModelStringFilterInput
-  content: ModelStringFilterInput
-  messageConversationId: ModelIDFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
-  and: [ModelMessageFilterInput]
-  or: [ModelMessageFilterInput]
-  not: ModelMessageFilterInput
 }
