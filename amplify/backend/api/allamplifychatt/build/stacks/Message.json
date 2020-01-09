@@ -75,178 +75,17 @@
         "GetAttGraphQLAPIApiId": {
             "Type": "String",
             "Description": "Auto-generated parameter that forwards Fn.GetAtt(GraphQLAPI, ApiId) through to nested stacks."
+        },
+        "GetAttMessageTableStreamArn": {
+            "Type": "String",
+            "Description": "Auto-generated parameter that forwards Fn.GetAtt(MessageTable, StreamArn) through to nested stacks."
+        },
+        "RefMessageTable": {
+            "Type": "String",
+            "Description": "Auto-generated parameter that forwards Fn.Ref(MessageTable) through to nested stacks."
         }
     },
     "Resources": {
-        "MessageTable": {
-            "Type": "AWS::DynamoDB::Table",
-            "Properties": {
-                "TableName": {
-                    "Fn::If": [
-                        "HasEnvironmentParameter",
-                        {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    "Message",
-                                    {
-                                        "Ref": "GetAttGraphQLAPIApiId"
-                                    },
-                                    {
-                                        "Ref": "env"
-                                    }
-                                ]
-                            ]
-                        },
-                        {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    "Message",
-                                    {
-                                        "Ref": "GetAttGraphQLAPIApiId"
-                                    }
-                                ]
-                            ]
-                        }
-                    ]
-                },
-                "KeySchema": [
-                    {
-                        "AttributeName": "id",
-                        "KeyType": "HASH"
-                    }
-                ],
-                "AttributeDefinitions": [
-                    {
-                        "AttributeName": "id",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "authorId",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "messageConversationId",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "createdAt",
-                        "AttributeType": "S"
-                    }
-                ],
-                "StreamSpecification": {
-                    "StreamViewType": "NEW_AND_OLD_IMAGES"
-                },
-                "BillingMode": {
-                    "Fn::If": [
-                        "ShouldUsePayPerRequestBilling",
-                        "PAY_PER_REQUEST",
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                },
-                "ProvisionedThroughput": {
-                    "Fn::If": [
-                        "ShouldUsePayPerRequestBilling",
-                        {
-                            "Ref": "AWS::NoValue"
-                        },
-                        {
-                            "ReadCapacityUnits": {
-                                "Ref": "DynamoDBModelTableReadIOPS"
-                            },
-                            "WriteCapacityUnits": {
-                                "Ref": "DynamoDBModelTableWriteIOPS"
-                            }
-                        }
-                    ]
-                },
-                "SSESpecification": {
-                    "SSEEnabled": {
-                        "Fn::If": [
-                            "ShouldUseServerSideEncryption",
-                            true,
-                            false
-                        ]
-                    }
-                },
-                "PointInTimeRecoverySpecification": {
-                    "Fn::If": [
-                        "ShouldUsePointInTimeRecovery",
-                        {
-                            "PointInTimeRecoveryEnabled": true
-                        },
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                },
-                "GlobalSecondaryIndexes": [
-                    {
-                        "IndexName": "gsi-UserMessages",
-                        "KeySchema": [
-                            {
-                                "AttributeName": "authorId",
-                                "KeyType": "HASH"
-                            }
-                        ],
-                        "Projection": {
-                            "ProjectionType": "ALL"
-                        },
-                        "ProvisionedThroughput": {
-                            "Fn::If": [
-                                "ShouldUsePayPerRequestBilling",
-                                {
-                                    "Ref": "AWS::NoValue"
-                                },
-                                {
-                                    "ReadCapacityUnits": {
-                                        "Ref": "DynamoDBModelTableReadIOPS"
-                                    },
-                                    "WriteCapacityUnits": {
-                                        "Ref": "DynamoDBModelTableWriteIOPS"
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "IndexName": "gsi-ConvoMsgs",
-                        "KeySchema": [
-                            {
-                                "AttributeName": "messageConversationId",
-                                "KeyType": "HASH"
-                            },
-                            {
-                                "AttributeName": "createdAt",
-                                "KeyType": "RANGE"
-                            }
-                        ],
-                        "Projection": {
-                            "ProjectionType": "ALL"
-                        },
-                        "ProvisionedThroughput": {
-                            "Fn::If": [
-                                "ShouldUsePayPerRequestBilling",
-                                {
-                                    "Ref": "AWS::NoValue"
-                                },
-                                {
-                                    "ReadCapacityUnits": {
-                                        "Ref": "DynamoDBModelTableReadIOPS"
-                                    },
-                                    "WriteCapacityUnits": {
-                                        "Ref": "DynamoDBModelTableWriteIOPS"
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
-        },
         "MessageIAMRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -646,10 +485,7 @@
         "GetAttMessageTableStreamArn": {
             "Description": "Your DynamoDB table StreamArn.",
             "Value": {
-                "Fn::GetAtt": [
-                    "MessageTable",
-                    "StreamArn"
-                ]
+                "Ref": "GetAttMessageTableStreamArn"
             },
             "Export": {
                 "Name": {
@@ -694,7 +530,7 @@
         "GetAttMessageTableName": {
             "Description": "Your DynamoDB table name.",
             "Value": {
-                "Ref": "MessageTable"
+                "Ref": "RefMessageTable"
             },
             "Export": {
                 "Name": {

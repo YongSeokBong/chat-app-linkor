@@ -75,170 +75,17 @@
         "GetAttGraphQLAPIApiId": {
             "Type": "String",
             "Description": "Auto-generated parameter that forwards Fn.GetAtt(GraphQLAPI, ApiId) through to nested stacks."
+        },
+        "GetAttConvoLinkTableStreamArn": {
+            "Type": "String",
+            "Description": "Auto-generated parameter that forwards Fn.GetAtt(ConvoLinkTable, StreamArn) through to nested stacks."
+        },
+        "RefConvoLinkTable": {
+            "Type": "String",
+            "Description": "Auto-generated parameter that forwards Fn.Ref(ConvoLinkTable) through to nested stacks."
         }
     },
     "Resources": {
-        "ConvoLinkTable": {
-            "Type": "AWS::DynamoDB::Table",
-            "Properties": {
-                "TableName": {
-                    "Fn::If": [
-                        "HasEnvironmentParameter",
-                        {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    "ConvoLink",
-                                    {
-                                        "Ref": "GetAttGraphQLAPIApiId"
-                                    },
-                                    {
-                                        "Ref": "env"
-                                    }
-                                ]
-                            ]
-                        },
-                        {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    "ConvoLink",
-                                    {
-                                        "Ref": "GetAttGraphQLAPIApiId"
-                                    }
-                                ]
-                            ]
-                        }
-                    ]
-                },
-                "KeySchema": [
-                    {
-                        "AttributeName": "id",
-                        "KeyType": "HASH"
-                    }
-                ],
-                "AttributeDefinitions": [
-                    {
-                        "AttributeName": "id",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "convoLinkUserId",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "convoLinkConversationId",
-                        "AttributeType": "S"
-                    }
-                ],
-                "StreamSpecification": {
-                    "StreamViewType": "NEW_AND_OLD_IMAGES"
-                },
-                "BillingMode": {
-                    "Fn::If": [
-                        "ShouldUsePayPerRequestBilling",
-                        "PAY_PER_REQUEST",
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                },
-                "ProvisionedThroughput": {
-                    "Fn::If": [
-                        "ShouldUsePayPerRequestBilling",
-                        {
-                            "Ref": "AWS::NoValue"
-                        },
-                        {
-                            "ReadCapacityUnits": {
-                                "Ref": "DynamoDBModelTableReadIOPS"
-                            },
-                            "WriteCapacityUnits": {
-                                "Ref": "DynamoDBModelTableWriteIOPS"
-                            }
-                        }
-                    ]
-                },
-                "SSESpecification": {
-                    "SSEEnabled": {
-                        "Fn::If": [
-                            "ShouldUseServerSideEncryption",
-                            true,
-                            false
-                        ]
-                    }
-                },
-                "PointInTimeRecoverySpecification": {
-                    "Fn::If": [
-                        "ShouldUsePointInTimeRecovery",
-                        {
-                            "PointInTimeRecoveryEnabled": true
-                        },
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                },
-                "GlobalSecondaryIndexes": [
-                    {
-                        "IndexName": "gsi-UserLinks",
-                        "KeySchema": [
-                            {
-                                "AttributeName": "convoLinkUserId",
-                                "KeyType": "HASH"
-                            }
-                        ],
-                        "Projection": {
-                            "ProjectionType": "ALL"
-                        },
-                        "ProvisionedThroughput": {
-                            "Fn::If": [
-                                "ShouldUsePayPerRequestBilling",
-                                {
-                                    "Ref": "AWS::NoValue"
-                                },
-                                {
-                                    "ReadCapacityUnits": {
-                                        "Ref": "DynamoDBModelTableReadIOPS"
-                                    },
-                                    "WriteCapacityUnits": {
-                                        "Ref": "DynamoDBModelTableWriteIOPS"
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "IndexName": "gsi-AssociatedLinks",
-                        "KeySchema": [
-                            {
-                                "AttributeName": "convoLinkConversationId",
-                                "KeyType": "HASH"
-                            }
-                        ],
-                        "Projection": {
-                            "ProjectionType": "ALL"
-                        },
-                        "ProvisionedThroughput": {
-                            "Fn::If": [
-                                "ShouldUsePayPerRequestBilling",
-                                {
-                                    "Ref": "AWS::NoValue"
-                                },
-                                {
-                                    "ReadCapacityUnits": {
-                                        "Ref": "DynamoDBModelTableReadIOPS"
-                                    },
-                                    "WriteCapacityUnits": {
-                                        "Ref": "DynamoDBModelTableWriteIOPS"
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
-        },
         "ConvoLinkIAMRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -574,10 +421,7 @@
         "GetAttConvoLinkTableStreamArn": {
             "Description": "Your DynamoDB table StreamArn.",
             "Value": {
-                "Fn::GetAtt": [
-                    "ConvoLinkTable",
-                    "StreamArn"
-                ]
+                "Ref": "GetAttConvoLinkTableStreamArn"
             },
             "Export": {
                 "Name": {
@@ -622,7 +466,7 @@
         "GetAttConvoLinkTableName": {
             "Description": "Your DynamoDB table name.",
             "Value": {
-                "Ref": "ConvoLinkTable"
+                "Ref": "RefConvoLinkTable"
             },
             "Export": {
                 "Name": {

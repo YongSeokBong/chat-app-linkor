@@ -75,104 +75,17 @@
         "GetAttGraphQLAPIApiId": {
             "Type": "String",
             "Description": "Auto-generated parameter that forwards Fn.GetAtt(GraphQLAPI, ApiId) through to nested stacks."
+        },
+        "GetAttConversationTableStreamArn": {
+            "Type": "String",
+            "Description": "Auto-generated parameter that forwards Fn.GetAtt(ConversationTable, StreamArn) through to nested stacks."
+        },
+        "RefConversationTable": {
+            "Type": "String",
+            "Description": "Auto-generated parameter that forwards Fn.Ref(ConversationTable) through to nested stacks."
         }
     },
     "Resources": {
-        "ConversationTable": {
-            "Type": "AWS::DynamoDB::Table",
-            "Properties": {
-                "TableName": {
-                    "Fn::If": [
-                        "HasEnvironmentParameter",
-                        {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    "Conversation",
-                                    {
-                                        "Ref": "GetAttGraphQLAPIApiId"
-                                    },
-                                    {
-                                        "Ref": "env"
-                                    }
-                                ]
-                            ]
-                        },
-                        {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    "Conversation",
-                                    {
-                                        "Ref": "GetAttGraphQLAPIApiId"
-                                    }
-                                ]
-                            ]
-                        }
-                    ]
-                },
-                "KeySchema": [
-                    {
-                        "AttributeName": "id",
-                        "KeyType": "HASH"
-                    }
-                ],
-                "AttributeDefinitions": [
-                    {
-                        "AttributeName": "id",
-                        "AttributeType": "S"
-                    }
-                ],
-                "StreamSpecification": {
-                    "StreamViewType": "NEW_AND_OLD_IMAGES"
-                },
-                "BillingMode": {
-                    "Fn::If": [
-                        "ShouldUsePayPerRequestBilling",
-                        "PAY_PER_REQUEST",
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                },
-                "ProvisionedThroughput": {
-                    "Fn::If": [
-                        "ShouldUsePayPerRequestBilling",
-                        {
-                            "Ref": "AWS::NoValue"
-                        },
-                        {
-                            "ReadCapacityUnits": {
-                                "Ref": "DynamoDBModelTableReadIOPS"
-                            },
-                            "WriteCapacityUnits": {
-                                "Ref": "DynamoDBModelTableWriteIOPS"
-                            }
-                        }
-                    ]
-                },
-                "SSESpecification": {
-                    "SSEEnabled": {
-                        "Fn::If": [
-                            "ShouldUseServerSideEncryption",
-                            true,
-                            false
-                        ]
-                    }
-                },
-                "PointInTimeRecoverySpecification": {
-                    "Fn::If": [
-                        "ShouldUsePointInTimeRecovery",
-                        {
-                            "PointInTimeRecoveryEnabled": true
-                        },
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                }
-            }
-        },
         "ConversationIAMRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -508,10 +421,7 @@
         "GetAttConversationTableStreamArn": {
             "Description": "Your DynamoDB table StreamArn.",
             "Value": {
-                "Fn::GetAtt": [
-                    "ConversationTable",
-                    "StreamArn"
-                ]
+                "Ref": "GetAttConversationTableStreamArn"
             },
             "Export": {
                 "Name": {
@@ -556,7 +466,7 @@
         "GetAttConversationTableName": {
             "Description": "Your DynamoDB table name.",
             "Value": {
-                "Ref": "ConversationTable"
+                "Ref": "RefConversationTable"
             },
             "Export": {
                 "Name": {

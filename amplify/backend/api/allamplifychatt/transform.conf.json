@@ -1,0 +1,12 @@
+{
+    "Migration": {
+        "V1": {
+            "Resources": [
+                "UserTable",
+                "ConversationTable",
+                "MessageTable",
+                "ConvoLinkTable"
+            ]
+        }
+    }
+}

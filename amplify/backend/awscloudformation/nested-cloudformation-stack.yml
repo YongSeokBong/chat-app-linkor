@@ -148,6 +148,7 @@
 			"Properties": {
 				"TemplateURL": "https://s3.amazonaws.com/chatt-master-20200109100346-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"Parameters": {
+					"DynamoDBBillingMode": "PROVISIONED",
 					"AppSyncApiName": "allamplifychatt",
 					"AuthCognitoUserPoolId": {
 						"Fn::GetAtt": [
@@ -156,7 +157,7 @@
 						]
 					},
 					"S3DeploymentBucket": "chatt-master-20200109100346-deployment",
-					"S3DeploymentRootKey": "amplify-appsync-files/8c7d98e231e102e520b5d81173af8b3ec6619112",
+					"S3DeploymentRootKey": "amplify-appsync-files/a53ae6bc71582912636f581f03c5f6a75a1754fc",
 					"env": "master"
 				}
 			}
